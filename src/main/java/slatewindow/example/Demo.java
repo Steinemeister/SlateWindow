@@ -72,6 +72,16 @@ public class Demo {
         window.setVisible(true);
         window.setVSync(1);
 
+        SlateWindow window1 = manager.builder()
+                .title("Second Window")
+                .size(400, 300)
+                .onClose(w -> {
+                    System.out.println("Close requested for second window: " + w.getTitle());
+                    w.close();
+                })
+                .build();
+        window1.setVisible(true);
+
         System.out.println("Entering main loop. Close the window to exit.");
 
         // Simple FPS counter
