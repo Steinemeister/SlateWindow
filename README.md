@@ -53,12 +53,36 @@ SlateWindow deliberately avoids binding a graphics context (OpenGL, Vulkan, etc.
 
 ---
 
-## Requirements
+### Installation (via JitPack)
 
-- **Java**: 21+
-- **LWJGL**: 3.3.2 (included via Gradle)
-- **GLFW**: 3.x (provided by LWJGL)
-- **OS**: Windows, Linux, or macOS with native bindings
+Add the JitPack repository and the dependency to your `build.gradle.kts`:
+
+```kotlin
+repositories {
+    mavenCentral()
+    maven { url = uri("https://jitpack.io") }
+}
+
+dependencies {
+    // Include SlateWindow
+    implementation("com.github.Steinemeister:SlateWindow:v0.1.0")
+
+    // IMPORTANT: You must define the LWJGL natives for your target platforms in your main application!
+    val lwjglVersion = "3.3.2"
+    runtimeOnly("org.lwjgl:lwjgl::natives-windows")
+    runtimeOnly("org.lwjgl:lwjgl-glfw::natives-windows")
+    runtimeOnly("org.lwjgl:lwjgl::natives-linux")
+    runtimeOnly("org.lwjgl:lwjgl-glfw::natives-linux")
+    runtimeOnly("org.lwjgl:lwjgl::natives-macos")
+    runtimeOnly("org.lwjgl:lwjgl-glfw::natives-macos")
+    runtimeOnly("org.lwjgl:lwjgl::natives-macos-arm64")
+    runtimeOnly("org.lwjgl:lwjgl-glfw::natives-macos-arm64")
+}
+```
+
+*(Note for Maven users: The required XML blocks will automatically be displayed on jitpack.io once your release is live).*
+
+---
 
 ### Gradle Dependency
 
