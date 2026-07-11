@@ -99,7 +99,7 @@ The builder automatically registers the window with the manager.
 while (!window.isClosed()) {
     manager.update();  // Poll GLFW events and update input state
     
-    // Your rendering logic here (on separate thread)
+    // Your rendering logic here (or on separate thread)
     // window.getHandle() provides the GLFW window handle
 }
 ```
