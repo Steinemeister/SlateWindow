@@ -57,12 +57,12 @@ public class SlateWindow {
 
     private void registerCallbacks() {
         keyCallback = (h, key, scancode, action, mods) -> {
-            for (KeyListener l : keyListeners) l.invoke((int)h, key, scancode, action, mods);
+            for (KeyListener l : keyListeners) l.invoke(this, key, scancode, action, mods);
         };
         GLFW.glfwSetKeyCallback(handle, keyCallback);
 
         mouseButtonCallback = (h, button, action, mods) -> {
-            for (Listeners.MouseButtonListener l : mouseButtonListeners) l.invoke((int)h, (int)button, (int)action, mods);
+            for (Listeners.MouseButtonListener l : mouseButtonListeners) l.invoke(this, (int)button, (int)action, mods);
             // Emulate simple touch: single touch id 0
             if (!touchListeners.isEmpty()) {
                 // Query cursor position
@@ -74,7 +74,7 @@ public class SlateWindow {
                     double xpos = xb.get(0);
                     double ypos = yb.get(0);
                     for (TouchListener t : touchListeners) {
-                        t.invoke(0, (int)action, xpos, ypos);
+                        t.invoke(this, 0, (int)action, xpos, ypos);
                     }
                 }
             }
@@ -82,23 +82,23 @@ public class SlateWindow {
         GLFW.glfwSetMouseButtonCallback(handle, mouseButtonCallback);
 
         cursorPosCallback = (h, xpos, ypos) -> {
-            for (MouseMoveListener l : mouseMoveListeners) l.invoke((int)h, xpos, ypos);
+            for (MouseMoveListener l : mouseMoveListeners) l.invoke(this, xpos, ypos);
         };
         GLFW.glfwSetCursorPosCallback(handle, cursorPosCallback);
 
         scrollCallback = (h, xoffset, yoffset) -> {
-            for (ScrollListener l : scrollListeners) l.invoke((int)h, xoffset, yoffset);
+            for (ScrollListener l : scrollListeners) l.invoke(this, xoffset, yoffset);
         };
         GLFW.glfwSetScrollCallback(handle, scrollCallback);
 
         fbSizeCallback = (h, w, hh) -> {
             this.width = w; this.height = hh;
-            for (ResizeListener l : resizeListeners) l.invoke((int)h, w, hh);
+            for (ResizeListener l : resizeListeners) l.invoke(this, w, hh);
         };
         GLFW.glfwSetFramebufferSizeCallback(handle, fbSizeCallback);
 
         focusCallback = (h, focused) -> {
-            for (FocusListener l : focusListeners) l.invoke((int)h, focused);
+            for (FocusListener l : focusListeners) l.invoke(this, focused);
         };
         GLFW.glfwSetWindowFocusCallback(handle, focusCallback);
 

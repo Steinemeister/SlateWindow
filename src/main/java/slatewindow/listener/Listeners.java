@@ -8,28 +8,28 @@ import slatewindow.SlateWindow;
 /** Window-scoped listeners */
 public class Listeners {
     @FunctionalInterface
-    public interface KeyListener { void invoke(int windowHandle, int key, int scancode, int action, int mods); }
+    public interface KeyListener { void invoke(SlateWindow window, int key, int scancode, int action, int mods); }
 
     @FunctionalInterface
-    public interface ResizeListener { void invoke(int windowHandle, int width, int height); }
+    public interface ResizeListener { void invoke(SlateWindow window, int width, int height); }
 
     @FunctionalInterface
     public interface CloseListener { void invoke(SlateWindow window); }
 
     @FunctionalInterface
-    public interface MouseButtonListener { void invoke(int windowHandle, int button, int action, int mods); }
+    public interface MouseButtonListener { void invoke(SlateWindow window, int button, int action, int mods); }
 
     @FunctionalInterface
-    public interface MouseMoveListener { void invoke(int windowHandle, double xpos, double ypos); }
+    public interface MouseMoveListener { void invoke(SlateWindow window, double xpos, double ypos); }
 
     @FunctionalInterface
-    public interface ScrollListener { void invoke(int windowHandle, double xoffset, double yoffset); }
+    public interface ScrollListener { void invoke(SlateWindow window, double xoffset, double yoffset); }
 
     @FunctionalInterface
-    public interface FocusListener { void invoke(int windowHandle, boolean focused); }
+    public interface FocusListener { void invoke(SlateWindow window, boolean focused); }
 
     @FunctionalInterface
-    public interface TouchListener { void invoke(int id, int action, double xpos, double ypos); }
+    public interface TouchListener { void invoke(SlateWindow window, int id, int action, double xpos, double ypos); }
 
     /** Global peripheral listeners for SlateWindowManager */
     @FunctionalInterface
