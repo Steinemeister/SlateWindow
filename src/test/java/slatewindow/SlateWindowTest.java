@@ -56,16 +56,6 @@ class SlateWindowTest {
     }
 
     @Test
-    @DisplayName("Should support adding key listeners")
-    void testAddKeyListener() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        KeyListener listener = (w, key, scancode, action, mods) -> called.set(true);
-        
-        window.addKeyListener(listener);
-        assertTrue(true); // Listener added without exception
-    }
-
-    @Test
     @DisplayName("Should support adding resize listeners")
     void testAddResizeListener() {
         AtomicBoolean called = new AtomicBoolean(false);
@@ -86,52 +76,12 @@ class SlateWindowTest {
     }
 
     @Test
-    @DisplayName("Should support adding mouse button listeners")
-    void testAddMouseButtonListener() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        MouseButtonListener listener = (w, button, action, mods) -> called.set(true);
-        
-        window.addMouseButtonListener(listener);
-        assertTrue(true); // Listener added without exception
-    }
-
-    @Test
-    @DisplayName("Should support adding mouse move listeners")
-    void testAddMouseMoveListener() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        MouseMoveListener listener = (w, xpos, ypos) -> called.set(true);
-        
-        window.addMouseMoveListener(listener);
-        assertTrue(true); // Listener added without exception
-    }
-
-    @Test
-    @DisplayName("Should support adding scroll listeners")
-    void testAddScrollListener() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        ScrollListener listener = (w, xoffset, yoffset) -> called.set(true);
-        
-        window.addScrollListener(listener);
-        assertTrue(true); // Listener added without exception
-    }
-
-    @Test
     @DisplayName("Should support adding focus listeners")
     void testAddFocusListener() {
         AtomicBoolean called = new AtomicBoolean(false);
         FocusListener listener = (w, focused) -> called.set(true);
         
         window.addFocusListener(listener);
-        assertTrue(true); // Listener added without exception
-    }
-
-    @Test
-    @DisplayName("Should support adding touch listeners")
-    void testAddTouchListener() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        TouchListener listener = (w, id, action, xpos, ypos) -> called.set(true);
-        
-        window.addTouchListener(listener);
         assertTrue(true); // Listener added without exception
     }
 
@@ -158,19 +108,6 @@ class SlateWindowTest {
         // Closing again should not fail
         window.close();
         assertTrue(window.isClosed());
-    }
-
-    @Test
-    @DisplayName("Should support multiple listeners of same type")
-    void testMultipleListenersSameType() {
-        AtomicInteger callCount = new AtomicInteger(0);
-        KeyListener listener1 = (w, key, scancode, action, mods) -> callCount.incrementAndGet();
-        KeyListener listener2 = (w, key, scancode, action, mods) -> callCount.incrementAndGet();
-        
-        window.addKeyListener(listener1);
-        window.addKeyListener(listener2);
-        
-        assertTrue(true); // Both listeners added without exception
     }
 
     @Test

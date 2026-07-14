@@ -17,14 +17,9 @@ public class SlateWindowBuilder<W extends SlateWindow, B extends SlateWindowBuil
     protected boolean decorated = true;
     protected boolean maximized = false;
 
-    protected final List<KeyListener> keyListeners = new ArrayList<>();
     protected final List<ResizeListener> resizeListeners = new ArrayList<>();
     protected final List<CloseListener> closeListeners = new ArrayList<>();
-    protected final List<MouseButtonListener> mouseButtonListeners = new ArrayList<>();
-    protected final List<MouseMoveListener> mouseMoveListeners = new ArrayList<>();
-    protected final List<ScrollListener> scrollListeners = new ArrayList<>();
     protected final List<FocusListener> focusListeners = new ArrayList<>();
-    protected final List<TouchListener> touchListeners = new ArrayList<>();
 
     private final SlateWindowFactory<W> factory;
 
@@ -40,14 +35,9 @@ public class SlateWindowBuilder<W extends SlateWindow, B extends SlateWindowBuil
     public B decorated(boolean d) { this.decorated = d; return self(); }
     public B maximized(boolean m) { this.maximized = m; return self(); }
 
-    public B onKey(KeyListener l) { keyListeners.add(l); return self(); }
     public B onResize(ResizeListener l) { resizeListeners.add(l); return self(); }
     public B onClose(CloseListener l) { closeListeners.add(l); return self(); }
-    public B onMouseButton(MouseButtonListener l) { mouseButtonListeners.add(l); return self(); }
-    public B onMouseMove(MouseMoveListener l) { mouseMoveListeners.add(l); return self(); }
-    public B onScroll(ScrollListener l) { scrollListeners.add(l); return self(); }
     public B onFocus(FocusListener l) { focusListeners.add(l); return self(); }
-    public B onTouch(TouchListener l) { touchListeners.add(l); return self(); }
 
     public W build() {
         // Reset hints and enforce no client API
@@ -62,14 +52,9 @@ public class SlateWindowBuilder<W extends SlateWindow, B extends SlateWindowBuil
         W window = factory.create(handle, title, width, height);
 
         // register listeners
-        keyListeners.forEach(window::addKeyListener);
         resizeListeners.forEach(window::addResizeListener);
         closeListeners.forEach(window::addCloseListener);
-        mouseButtonListeners.forEach(window::addMouseButtonListener);
-        mouseMoveListeners.forEach(window::addMouseMoveListener);
-        scrollListeners.forEach(window::addScrollListener);
         focusListeners.forEach(window::addFocusListener);
-        touchListeners.forEach(window::addTouchListener);
 
         return window;
     }

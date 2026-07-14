@@ -30,11 +30,6 @@ public class Demo {
             System.out.printf("  %d: %s - %dx%d @ %dhz\n", i, mi.getName(), mi.getWidth(), mi.getHeight(), mi.getRefreshRate());
         }
 
-        // Register global gamepad listeners
-        manager.addGamepadConnectionListener((jid, connected) -> System.out.println("Gamepad " + jid + " connected=" + connected));
-        manager.addGamepadButtonListener((jid, button, action) -> System.out.println("Gamepad " + jid + " button=" + button + " action=" + action));
-        manager.addGamepadAxisListener((jid, axis, value) -> System.out.println("Gamepad " + jid + " axis=" + axis + " value=" + value));
-
         // Build a window with many listeners attached
         SlateWindow window = manager.builder()
                 .title("SlateWindow Verbose Demo")
@@ -44,20 +39,8 @@ public class Demo {
                     // Close explicitly to allow manager to clean up
                     w.close();
                 })
-                .onKey((w, key, scancode, action, mods) -> {
-                    System.out.println(String.format("Key event: key=%d scancode=%d action=%d mods=%d", key, scancode, action, mods));
-                    // Close on ESC
-                    if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_PRESS) {
-                        System.out.println("Escape pressed - closing window.");
-                        w.close();
-                    }
-                })
                 .onResize((win, width, height) -> System.out.println("Resized: " + width + "x" + height))
-                .onMouseMove((win, xpos, ypos) -> System.out.println(String.format("Mouse move: x=%.1f y=%.1f", xpos, ypos)))
-                .onMouseButton((win, button, action, mods) -> System.out.println(String.format("Mouse button: button=%d action=%d mods=%d", button, action, mods)))
-                .onScroll((win, xoff, yoff) -> System.out.println(String.format("Scroll: xoff=%.2f yoff=%.2f", xoff, yoff)))
                 .onFocus((win, focused) -> System.out.println("Focus changed: " + focused))
-                .onTouch((win, id, action, xpos, ypos) -> System.out.println(String.format("Touch: id=%d action=%d x=%.1f y=%.1f", id, action, xpos, ypos)))
                 .build();
 
         // Position window roughly centered on primary monitor

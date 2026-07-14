@@ -29,56 +29,6 @@ class SlateWindowManagerTest {
     }
 
     @Test
-    @DisplayName("Should support adding gamepad button listeners")
-    void testAddGamepadButtonListener() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        GamepadButtonListener listener = (jid, button, action) -> called.set(true);
-        
-        manager.addGamepadButtonListener(listener);
-        assertTrue(true); // Listener added without exception
-    }
-
-    @Test
-    @DisplayName("Should support adding gamepad axis listeners")
-    void testAddGamepadAxisListener() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        GamepadAxisListener listener = (jid, axis, value) -> called.set(true);
-        
-        manager.addGamepadAxisListener(listener);
-        assertTrue(true); // Listener added without exception
-    }
-
-    @Test
-    @DisplayName("Should support adding gamepad connection listeners")
-    void testAddGamepadConnectionListener() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        GamepadConnectionListener listener = (jid, connected) -> called.set(true);
-        
-        manager.addGamepadConnectionListener(listener);
-        assertTrue(true); // Listener added without exception
-    }
-
-    @Test
-    @DisplayName("Should support adding joystick listeners")
-    void testAddJoystickListener() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        JoystickListener listener = (jid, axes, buttons) -> called.set(true);
-        
-        manager.addJoystickListener(listener);
-        assertTrue(true); // Listener added without exception
-    }
-
-    @Test
-    @DisplayName("Should support adding space mouse listeners")
-    void testAddSpaceMouseListener() {
-        AtomicBoolean called = new AtomicBoolean(false);
-        SpaceMouseListener listener = (jid, tx, ty, tz, rx, ry, rz, buttons) -> called.set(true);
-        
-        manager.addSpaceMouseListener(listener);
-        assertTrue(true); // Listener added without exception
-    }
-
-    @Test
     @DisplayName("Should register windows")
     void testRegisterWindow() {
         SlateWindow mockWindow = new SlateWindow(1L, "Test", 800, 600);
@@ -102,20 +52,6 @@ class SlateWindowManagerTest {
         
         var builder = manager.builder(factory);
         assertNotNull(builder);
-    }
-
-    @Test
-    @DisplayName("Should support multiple listener additions")
-    void testMultipleListenerAdditions() {
-        GamepadButtonListener listener1 = (jid, button, action) -> {};
-        GamepadButtonListener listener2 = (jid, button, action) -> {};
-        GamepadButtonListener listener3 = (jid, button, action) -> {};
-        
-        manager.addGamepadButtonListener(listener1);
-        manager.addGamepadButtonListener(listener2);
-        manager.addGamepadButtonListener(listener3);
-        
-        assertTrue(true); // All listeners added without exception
     }
 
     @Test

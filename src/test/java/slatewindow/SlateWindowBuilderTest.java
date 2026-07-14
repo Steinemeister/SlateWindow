@@ -86,16 +86,6 @@ class SlateWindowBuilderTest {
     }
 
     @Test
-    @DisplayName("Should add key listener")
-    void testAddKeyListener() {
-        KeyListener listener = (w, key, scancode, action, mods) -> {};
-        SlateWindowBuilder<SlateWindow, ?> result = builder.onKey(listener);
-        
-        assertSame(builder, result); // Fluent API
-        assertTrue(builder.keyListeners.contains(listener));
-    }
-
-    @Test
     @DisplayName("Should add resize listener")
     void testAddResizeListener() {
         ResizeListener listener = (w, width, height) -> {};
@@ -116,36 +106,6 @@ class SlateWindowBuilderTest {
     }
 
     @Test
-    @DisplayName("Should add mouse button listener")
-    void testAddMouseButtonListener() {
-        MouseButtonListener listener = (w, button, action, mods) -> {};
-        SlateWindowBuilder<SlateWindow, ?> result = builder.onMouseButton(listener);
-        
-        assertSame(builder, result); // Fluent API
-        assertTrue(builder.mouseButtonListeners.contains(listener));
-    }
-
-    @Test
-    @DisplayName("Should add mouse move listener")
-    void testAddMouseMoveListener() {
-        MouseMoveListener listener = (w, xpos, ypos) -> {};
-        SlateWindowBuilder<SlateWindow, ?> result = builder.onMouseMove(listener);
-        
-        assertSame(builder, result); // Fluent API
-        assertTrue(builder.mouseMoveListeners.contains(listener));
-    }
-
-    @Test
-    @DisplayName("Should add scroll listener")
-    void testAddScrollListener() {
-        ScrollListener listener = (w, xoffset, yoffset) -> {};
-        SlateWindowBuilder<SlateWindow, ?> result = builder.onScroll(listener);
-        
-        assertSame(builder, result); // Fluent API
-        assertTrue(builder.scrollListeners.contains(listener));
-    }
-
-    @Test
     @DisplayName("Should add focus listener")
     void testAddFocusListener() {
         FocusListener listener = (w, focused) -> {};
@@ -153,56 +113,6 @@ class SlateWindowBuilderTest {
         
         assertSame(builder, result); // Fluent API
         assertTrue(builder.focusListeners.contains(listener));
-    }
-
-    @Test
-    @DisplayName("Should add touch listener")
-    void testAddTouchListener() {
-        TouchListener listener = (w, id, action, xpos, ypos) -> {};
-        SlateWindowBuilder<SlateWindow, ?> result = builder.onTouch(listener);
-        
-        assertSame(builder, result); // Fluent API
-        assertTrue(builder.touchListeners.contains(listener));
-    }
-
-    @Test
-    @DisplayName("Should support fluent API chaining")
-    void testFluentAPIChaining() {
-        KeyListener keyListener = (w, key, scancode, action, mods) -> {};
-        ResizeListener resizeListener = (w, width, height) -> {};
-        CloseListener closeListener = (w) -> {};
-        
-        builder.size(1024, 768)
-               .title("Chained Window")
-               .decorated(false)
-               .maximized(true)
-               .onKey(keyListener)
-               .onResize(resizeListener)
-               .onClose(closeListener);
-        
-        assertEquals(1024, builder.width);
-        assertEquals(768, builder.height);
-        assertEquals("Chained Window", builder.title);
-        assertFalse(builder.decorated);
-        assertTrue(builder.maximized);
-        assertTrue(builder.keyListeners.contains(keyListener));
-        assertTrue(builder.resizeListeners.contains(resizeListener));
-        assertTrue(builder.closeListeners.contains(closeListener));
-    }
-
-    @Test
-    @DisplayName("Should add multiple listeners of same type")
-    void testMultipleListenersSameType() {
-        KeyListener listener1 = (w, key, scancode, action, mods) -> {};
-        KeyListener listener2 = (w, key, scancode, action, mods) -> {};
-        KeyListener listener3 = (w, key, scancode, action, mods) -> {};
-        
-        builder.onKey(listener1).onKey(listener2).onKey(listener3);
-        
-        assertEquals(3, builder.keyListeners.size());
-        assertTrue(builder.keyListeners.contains(listener1));
-        assertTrue(builder.keyListeners.contains(listener2));
-        assertTrue(builder.keyListeners.contains(listener3));
     }
 }
 

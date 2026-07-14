@@ -2,10 +2,6 @@ package slatewindow;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import org.lwjgl.glfw.GLFWKeyCallbackI;
-import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
-import org.lwjgl.glfw.GLFWCursorPosCallbackI;
-import org.lwjgl.glfw.GLFWScrollCallbackI;
 import org.lwjgl.glfw.GLFWWindowFocusCallbackI;
 import org.lwjgl.glfw.GLFWWindowContentScaleCallbackI;
 import org.lwjgl.glfw.GLFWWindowMaximizeCallbackI;
@@ -26,10 +22,6 @@ public class SlateWindow {
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
     // Callbacks must be stored to avoid GC
-    private GLFWKeyCallbackI keyCallback;
-    private GLFWMouseButtonCallbackI mouseButtonCallback;
-    private GLFWCursorPosCallbackI cursorPosCallback;
-    private GLFWScrollCallbackI scrollCallback;
     private GLFWFramebufferSizeCallbackI fbSizeCallback;
     private GLFWWindowFocusCallbackI focusCallback;
     private GLFWWindowContentScaleCallbackI contentScaleCallback;
@@ -37,14 +29,9 @@ public class SlateWindow {
     private GLFWWindowCloseCallbackI closeCallback;
 
     // listeners
-    private final List<KeyListener> keyListeners = new CopyOnWriteArrayList<>();
     private final List<ResizeListener> resizeListeners = new CopyOnWriteArrayList<>();
     private final List<CloseListener> closeListeners = new CopyOnWriteArrayList<>();
-    private final List<MouseButtonListener> mouseButtonListeners = new CopyOnWriteArrayList<>();
-    private final List<MouseMoveListener> mouseMoveListeners = new CopyOnWriteArrayList<>();
-    private final List<ScrollListener> scrollListeners = new CopyOnWriteArrayList<>();
     private final List<FocusListener> focusListeners = new CopyOnWriteArrayList<>();
-    private final List<TouchListener> touchListeners = new CopyOnWriteArrayList<>();
 
     public SlateWindow(long handle, String title, int width, int height) {
         this.handle = handle;
@@ -56,40 +43,6 @@ public class SlateWindow {
     }
 
     private void registerCallbacks() {
-        keyCallback = (h, key, scancode, action, mods) -> {
-            for (KeyListener l : keyListeners) l.invoke(this, key, scancode, action, mods);
-        };
-        GLFW.glfwSetKeyCallback(handle, keyCallback);
-
-        mouseButtonCallback = (h, button, action, mods) -> {
-            for (Listeners.MouseButtonListener l : mouseButtonListeners) l.invoke(this, (int)button, (int)action, mods);
-            // Emulate simple touch: single touch id 0
-            if (!touchListeners.isEmpty()) {
-                // Query cursor position
-                org.lwjgl.system.MemoryStack stack = org.lwjgl.system.MemoryStack.stackGet();
-                try (org.lwjgl.system.MemoryStack stack2 = org.lwjgl.system.MemoryStack.stackPush()) {
-                    java.nio.DoubleBuffer xb = stack2.mallocDouble(1);
-                    java.nio.DoubleBuffer yb = stack2.mallocDouble(1);
-                    GLFW.glfwGetCursorPos(h, xb, yb);
-                    double xpos = xb.get(0);
-                    double ypos = yb.get(0);
-                    for (TouchListener t : touchListeners) {
-                        t.invoke(this, 0, (int)action, xpos, ypos);
-                    }
-                }
-            }
-        };
-        GLFW.glfwSetMouseButtonCallback(handle, mouseButtonCallback);
-
-        cursorPosCallback = (h, xpos, ypos) -> {
-            for (MouseMoveListener l : mouseMoveListeners) l.invoke(this, xpos, ypos);
-        };
-        GLFW.glfwSetCursorPosCallback(handle, cursorPosCallback);
-
-        scrollCallback = (h, xoffset, yoffset) -> {
-            for (ScrollListener l : scrollListeners) l.invoke(this, xoffset, yoffset);
-        };
-        GLFW.glfwSetScrollCallback(handle, scrollCallback);
 
         fbSizeCallback = (h, w, hh) -> {
             this.width = w; this.height = hh;
@@ -130,14 +83,9 @@ public class SlateWindow {
     public int getHeight() { return height; }
     public boolean isClosed() { return closed.get(); }
 
-    public void addKeyListener(KeyListener l) { keyListeners.add(l); }
     public void addResizeListener(ResizeListener l) { resizeListeners.add(l); }
     public void addCloseListener(CloseListener l) { closeListeners.add(l); }
-    public void addMouseButtonListener(MouseButtonListener l) { mouseButtonListeners.add(l); }
-    public void addMouseMoveListener(MouseMoveListener l) { mouseMoveListeners.add(l); }
-    public void addScrollListener(ScrollListener l) { scrollListeners.add(l); }
     public void addFocusListener(FocusListener l) { focusListeners.add(l); }
-    public void addTouchListener(TouchListener l) { touchListeners.add(l); }
 
     /** Close and destroy the GLFW window exactly once. */
     public void close() {
