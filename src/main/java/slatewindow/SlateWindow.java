@@ -6,14 +6,16 @@ import org.lwjgl.glfw.GLFWWindowFocusCallbackI;
 import org.lwjgl.glfw.GLFWWindowContentScaleCallbackI;
 import org.lwjgl.glfw.GLFWWindowMaximizeCallbackI;
 import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
-import slatewindow.listener.*;
+import slatewindow.input.keyboard.Keyboard;
 
+import slatewindow.input.mouse.Mouse;
 import slatewindow.listener.Listeners.*;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+// Represents a GLFW window with event handling and listener support
 public class SlateWindow {
     private final long handle;
     private volatile String title;
@@ -33,15 +35,22 @@ public class SlateWindow {
     private final List<CloseListener> closeListeners = new CopyOnWriteArrayList<>();
     private final List<FocusListener> focusListeners = new CopyOnWriteArrayList<>();
 
+    private final Keyboard keyboard;
+    private final Mouse mouse;
+
     public SlateWindow(long handle, String title, int width, int height) {
         this.handle = handle;
         this.title = title;
         this.width = width;
         this.height = height;
 
+        this.keyboard = new Keyboard(handle);
+        this.mouse = new Mouse(handle);
+
         registerCallbacks();
     }
 
+    // Register GLFW callbacks for window events
     private void registerCallbacks() {
 
         fbSizeCallback = (h, w, hh) -> {
@@ -77,11 +86,19 @@ public class SlateWindow {
         GLFW.glfwSetWindowCloseCallback(handle, closeCallback);
     }
 
+    public void update() {
+        keyboard.update();
+        mouse.update();
+    }
+
+    // Getters and listener management
     public long getHandle() { return handle; }
     public String getTitle() { return title; }
     public int getWidth() { return width; }
     public int getHeight() { return height; }
     public boolean isClosed() { return closed.get(); }
+    public Keyboard getKeyboard() { return keyboard; }
+    public Mouse getMouse() { return mouse; }
 
     public void addResizeListener(ResizeListener l) { resizeListeners.add(l); }
     public void addCloseListener(CloseListener l) { closeListeners.add(l); }
@@ -91,6 +108,14 @@ public class SlateWindow {
     public void close() {
         if (closed.compareAndSet(false, true)) {
             GLFW.glfwDestroyWindow(handle);
+        }
+    }
+
+    public void requestClose() {
+        if (closeListeners.isEmpty()) {
+            close();
+        } else {
+            for (CloseListener l : closeListeners) l.invoke((this));
         }
     }
 

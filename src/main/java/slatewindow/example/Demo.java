@@ -4,19 +4,14 @@ import org.lwjgl.glfw.GLFW;
 import slatewindow.SlateMonitorInfo;
 import slatewindow.SlateWindow;
 import slatewindow.SlateWindowManager;
+import slatewindow.input.keyboard.Key;
+import slatewindow.input.keyboard.KeyState;
+import slatewindow.input.mouse.MouseButton;
+import slatewindow.input.mouse.MouseButtonState;
 
 import java.util.List;
 
-/**
- * Ausführlichere Demo, die viele Teile der SlateWindow-API verwendet.
- *
- * Funktionen:
- * - Ausgabe verfügbarer Monitore
- * - Erzeugung eines Fensters mit zahlreichen Event-Handlern
- * - Zeigt Maus-, Tastatur-, Scroll- und Touch-Ereignisse an
- * - Gamepad/Joystick-Events (global) anzeigen
- * - FPS-Zählung und Aktualisierung des Fenstertitels (über GLFW)
- */
+// A simple demo showing how to use the SlateWindowManager and SlateWindow classes.
 public class Demo {
     public static void main(String[] args) {
         SlateWindowManager manager = new SlateWindowManager();
@@ -32,7 +27,7 @@ public class Demo {
 
         // Build a window with many listeners attached
         SlateWindow window = manager.builder()
-                .title("SlateWindow Verbose Demo")
+                .title("SlateWindow Demo")
                 .size(800, 600)
                 .onClose(w -> {
                     System.out.println("Close requested for window: " + w.getTitle());
@@ -81,7 +76,7 @@ public class Demo {
             long now = System.nanoTime();
             if (now - lastTime >= 16_000_000) {
                 // Sleep a bit to avoid pegging CPU in this simple demo
-                try { Thread.sleep(1); } catch (InterruptedException ignored) {}
+                try { Thread.sleep(16); } catch (InterruptedException ignored) {}
                 lastTime = now;
             }
 
@@ -91,8 +86,13 @@ public class Demo {
                 int fps = frames;
                 frames = 0;
                 lastFpsUpdate = tms;
-                String newTitle = String.format("SlateWindow Verbose Demo - %d FPS - %dx%d", fps, window.getWidth(), window.getHeight());
+                String newTitle = String.format("SlateWindow Demo - %d FPS - %dx%d", fps, window.getWidth(), window.getHeight());
                 GLFW.glfwSetWindowTitle(window.getHandle(), newTitle);
+            }
+
+            if (window.getKeyboard().isKeyDown(Key.ESCAPE)) {
+                System.out.println("Escape pressed, requesting window close.");
+                window.requestClose();
             }
         }
 

@@ -58,12 +58,12 @@ public class SlateWindowManager {
     }
 
     public void update() {
+        windows.removeIf(SlateWindow::isClosed);
+        for (SlateWindow window : windows) {
+            window.update();
+        }
         // Must be called on main thread
         GLFW.glfwPollEvents();
-
-
-        // Remove closed windows
-        windows.removeIf(SlateWindow::isClosed);
     }
 
     public void terminate() {
