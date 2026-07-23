@@ -6,6 +6,7 @@ import slatewindow.SlateWindow;
 import slatewindow.SlateWindowManager;
 import slatewindow.input.keyboard.Key;
 import slatewindow.input.keyboard.KeyState;
+import slatewindow.input.mouse.CursorMode;
 import slatewindow.input.mouse.MouseButton;
 import slatewindow.input.mouse.MouseButtonState;
 
@@ -38,19 +39,7 @@ public class Demo {
                 .onFocus((win, focused) -> System.out.println("Focus changed: " + focused))
                 .build();
 
-        // Position window roughly centered on primary monitor
-        if (!monitors.isEmpty()) {
-            SlateMonitorInfo primary = monitors.get(0);
-            int x = Math.max(0, (primary.getWidth() - window.getWidth()) / 2);
-            int y = Math.max(0, (primary.getHeight() - window.getHeight()) / 2);
-            window.setPosition(x, y);
-        }
-
-        // Make visible and enable a stored vsync flag
-        window.setVisible(true);
-        window.setVSync(1);
-
-        SlateWindow window1 = manager.builder()
+        SlateWindow window2 = manager.builder()
                 .title("Second Window")
                 .size(400, 300)
                 .onClose(w -> {
@@ -58,7 +47,26 @@ public class Demo {
                     w.close();
                 })
                 .build();
-        window1.setVisible(true);
+
+        // Position window roughly centered on primary monitor
+        if (!monitors.isEmpty()) {
+            SlateMonitorInfo primary = monitors.get(0);
+            int x = Math.max(0, (primary.getWidth() - window.getWidth()) / 2);
+            int y = Math.max(0, (primary.getHeight() - window.getHeight()) / 2);
+            window.setPosition(x, y);
+
+            x = 0;
+            y = Math.max(0, (primary.getHeight() - window2.getHeight()) / 2);
+
+            window2.setPosition(x, y);
+        }
+
+        // Make visible and enable a stored vsync flag
+        window.setVisible(true);
+        window.setVSync(1);
+
+        // Set cursor mode to disabled (hidden)
+        window.getMouse().setCursorMode(CursorMode.HIDDEN);
 
         System.out.println("Entering main loop. Close the window to exit.");
 

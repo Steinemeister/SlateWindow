@@ -1,16 +1,15 @@
 package slatewindow;
 
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
-import org.lwjgl.glfw.GLFWWindowFocusCallbackI;
-import org.lwjgl.glfw.GLFWWindowContentScaleCallbackI;
-import org.lwjgl.glfw.GLFWWindowMaximizeCallbackI;
-import org.lwjgl.glfw.GLFWWindowCloseCallbackI;
+import org.lwjgl.glfw.*;
+import org.lwjgl.stb.STBImage;
+import org.lwjgl.system.MemoryStack;
 import slatewindow.input.keyboard.Keyboard;
 
 import slatewindow.input.mouse.Mouse;
 import slatewindow.listener.Listeners.*;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,6 +21,7 @@ public class SlateWindow {
     private volatile int width;
     private volatile int height;
     private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final AtomicBoolean focused;
 
     // Callbacks must be stored to avoid GC
     private GLFWFramebufferSizeCallbackI fbSizeCallback;
@@ -44,8 +44,9 @@ public class SlateWindow {
         this.width = width;
         this.height = height;
 
-        this.keyboard = new Keyboard(handle);
-        this.mouse = new Mouse(handle);
+        this.keyboard = new Keyboard(this);
+        this.mouse = new Mouse(this);
+        this.focused = new AtomicBoolean(GLFW.glfwGetWindowAttrib(handle, GLFW.GLFW_FOCUSED) == GLFW.GLFW_TRUE);
 
         registerCallbacks();
     }
@@ -61,6 +62,7 @@ public class SlateWindow {
 
         focusCallback = (h, focused) -> {
             for (FocusListener l : focusListeners) l.invoke(this, focused);
+            this.focused.set(focused);
         };
         GLFW.glfwSetWindowFocusCallback(handle, focusCallback);
 
@@ -91,12 +93,37 @@ public class SlateWindow {
         mouse.update();
     }
 
+    public void setIcon(String iconPath) {
+        // Load image using STBImage
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            IntBuffer w = stack.mallocInt(1);
+            IntBuffer h = stack.mallocInt(1);
+            IntBuffer channels = stack.mallocInt(1);
+
+            ByteBuffer image = STBImage.stbi_load(iconPath, w, h, channels, 4);
+            if (image == null) {
+                throw new RuntimeException("Failed to load icon: " + STBImage.stbi_failure_reason());
+            }
+
+            GLFWImage.Buffer iconBuffer = GLFWImage.malloc(1);
+            iconBuffer.position(0)
+                    .width(w.get(0))
+                    .height(h.get(0))
+                    .pixels(image);
+
+            GLFW.glfwSetWindowIcon(handle, iconBuffer);
+
+            STBImage.stbi_image_free(image);
+        }
+    }
+
     // Getters and listener management
     public long getHandle() { return handle; }
     public String getTitle() { return title; }
     public int getWidth() { return width; }
     public int getHeight() { return height; }
     public boolean isClosed() { return closed.get(); }
+    public boolean isFocused() { return focused.get(); }
     public Keyboard getKeyboard() { return keyboard; }
     public Mouse getMouse() { return mouse; }
 
@@ -135,4 +162,3 @@ public class SlateWindow {
         return GLFW.glfwGetWindowAttrib(handle, GLFW.GLFW_VISIBLE) == GLFW.GLFW_TRUE;
     }
 }
-

@@ -1,5 +1,8 @@
 package slatewindow.input.mouse;
 
+import org.lwjgl.glfw.GLFW;
+import slatewindow.SlateWindow;
+import slatewindow.input.InputDevice;
 import slatewindow.input.keyboard.KeyMod;
 
 import java.util.EnumMap;
@@ -8,9 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 // Class to manage mouse input, tracking button states and cursor position
-public class Mouse {
+public class Mouse extends InputDevice {
     private final Map<MouseButton, MouseButtonState> buttonStates = new EnumMap<>(MouseButton.class);
-
     private final Set<KeyMod> activeMods = EnumSet.noneOf(KeyMod.class);
 
     private double cursorX, cursorY;
@@ -18,16 +20,20 @@ public class Mouse {
     private double deltaX, deltaY;
     private double scrollX, scrollY;
 
-    public Mouse(long windowHandle) {
+    private CursorMode cursorMode = CursorMode.NORMAL;
+
+    public Mouse(SlateWindow window) {
+        super(window);
+
         for (MouseButton button : MouseButton.values()) {
             buttonStates.put(button, MouseButtonState.NONE);
         }
-        setCallbacks(windowHandle);
+        setCallbacks(window.getHandle());
     }
 
     private void setCallbacks(long windowHandle) {
         // Set GLFW mouse button callback
-        org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback(windowHandle, (handle, buttonCode, action, mods) -> {
+        GLFW.glfwSetMouseButtonCallback(windowHandle, (handle, buttonCode, action, mods) -> {
             updateModifiers(mods);
 
             MouseButton button = MouseButton.fromGlfwCode(buttonCode);
@@ -37,8 +43,8 @@ public class Mouse {
             }
 
             switch (action) {
-                case org.lwjgl.glfw.GLFW.GLFW_PRESS -> buttonStates.put(button, MouseButtonState.PRESSED);
-                case org.lwjgl.glfw.GLFW.GLFW_RELEASE -> buttonStates.put(button, MouseButtonState.RELEASED);
+                case GLFW.GLFW_PRESS -> buttonStates.put(button, MouseButtonState.PRESSED);
+                case GLFW.GLFW_RELEASE -> buttonStates.put(button, MouseButtonState.RELEASED);
                 default -> {
                     buttonStates.put(button, MouseButtonState.NONE);
                     System.err.println("Unknown mouse button action: " + action);
@@ -47,13 +53,13 @@ public class Mouse {
         });
 
         // Set GLFW cursor position callback
-        org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback(windowHandle, (handle, xpos, ypos) -> {
+        GLFW.glfwSetCursorPosCallback(windowHandle, (handle, xpos, ypos) -> {
             cursorX = xpos;
             cursorY = ypos;
         });
 
         // Set GLFW scroll callback
-        org.lwjgl.glfw.GLFW.glfwSetScrollCallback(windowHandle, (handle, xoffset, yoffset) -> {
+        GLFW.glfwSetScrollCallback(windowHandle, (handle, xoffset, yoffset) -> {
             scrollX += xoffset;
             scrollY += yoffset;
         });
@@ -68,6 +74,7 @@ public class Mouse {
         }
     }
 
+    @Override
     public void update() {
         for (Map.Entry<MouseButton, MouseButtonState> entry : buttonStates.entrySet()) {
             MouseButton button = entry.getKey();
@@ -89,6 +96,33 @@ public class Mouse {
 
         scrollX = 0;
         scrollY = 0;
+
+        if (this.getWindow().isFocused()) {
+            GLFW.glfwSetInputMode(this.getWindow().getHandle(), GLFW.GLFW_CURSOR, cursorMode.getGlfwMode());
+
+            if (cursorMode == CursorMode.DISABLED) {
+                double[] x = new double[1];
+                double[] y = new double[1];
+                GLFW.glfwGetCursorPos(this.getWindow().getHandle(), x, y);
+                this.cursorX = x[0];
+                this.cursorY = y[0];
+                this.lastCursorX = x[0];
+                this.lastCursorY = y[0];
+                this.deltaX = 0;
+                this.deltaY = 0;
+            }
+        } else {
+            GLFW.glfwSetInputMode(this.getWindow().getHandle(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+        }
+    }
+
+    public void setCursorMode(CursorMode cursorMode) {
+        this.cursorMode = cursorMode;
+        //GLFW.glfwSetInputMode(this.getWindow().getHandle(), GLFW.GLFW_CURSOR, cursorMode.getGlfwMode());
+    }
+
+    public CursorMode getCursorMode() {
+        return cursorMode;
     }
 
     public MouseButtonState getState(MouseButton button) {

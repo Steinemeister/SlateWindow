@@ -1,5 +1,8 @@
 package slatewindow.input.keyboard;
 
+import slatewindow.SlateWindow;
+import slatewindow.input.InputDevice;
+
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
@@ -8,7 +11,7 @@ import java.util.Set;
 import static org.lwjgl.glfw.GLFW.*;
 
 // Class to manage keyboard input, tracking key states and active modifiers
-public class Keyboard {
+public class Keyboard extends InputDevice {
     // Map to hold the state of each key
     private final Map<Key, KeyState> keyStates = new EnumMap<>(Key.class);
 
@@ -16,11 +19,12 @@ public class Keyboard {
     private final Set<KeyMod> activeMods = EnumSet.noneOf(KeyMod.class);
 
     // Constructor that initializes the keyboard state and sets up GLFW callbacks
-    public Keyboard(long windowHandle) {
+    public Keyboard(SlateWindow window) {
+        super(window);
         for (Key key : Key.values()) {
             keyStates.put(key, KeyState.NONE);
         }
-        setCallbacks(windowHandle);
+        setCallbacks(window.getHandle());
     }
 
     // Set up GLFW key callback to update key states and modifier keys
@@ -56,6 +60,7 @@ public class Keyboard {
         }
     }
 
+    @Override
     public void update() {
         for (Map.Entry<Key, KeyState> entry : keyStates.entrySet()) {
             Key key = entry.getKey();
