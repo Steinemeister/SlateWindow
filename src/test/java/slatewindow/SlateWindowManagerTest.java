@@ -4,9 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
-import slatewindow.listener.Listeners.*;
-
-import java.util.concurrent.atomic.AtomicBoolean;
+import slatewindow.window.SlateWindow;
+import slatewindow.window.SlateWindowFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,7 +46,7 @@ class SlateWindowManagerTest {
     @Test
     @DisplayName("Should create builder with custom factory")
     void testBuilderCustomFactory() {
-        SlateWindowFactory<SlateWindow> factory = (handle, title, w, h) -> 
+        SlateWindowFactory<SlateWindow> factory = (handle, title, w, h) ->
             new SlateWindow(handle, title, w, h);
         
         var builder = manager.builder(factory);

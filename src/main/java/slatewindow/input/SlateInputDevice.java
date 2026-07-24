@@ -1,11 +1,11 @@
 package slatewindow.input;
 
-import slatewindow.SlateWindow;
+import slatewindow.window.SlateWindow;
 
-public abstract class InputDevice {
+public abstract class SlateInputDevice {
     private final SlateWindow window;
 
-    public InputDevice(SlateWindow window) {
+    public SlateInputDevice(SlateWindow window) {
         this.window = window;
     }
 

@@ -1,4 +1,4 @@
-package slatewindow;
+package slatewindow.window;
 
 import org.lwjgl.glfw.GLFW;
 

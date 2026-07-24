@@ -1,6 +1,7 @@
 package slatewindow.listener;
 
-import slatewindow.SlateWindow;
+import slatewindow.window.SlateWindow;
+import slatewindow.window.WindowCloseEvent;
 
 /** Window-scoped listeners */
 public class Listeners {
@@ -8,7 +9,7 @@ public class Listeners {
     public interface ResizeListener { void invoke(SlateWindow window, int width, int height); }
 
     @FunctionalInterface
-    public interface CloseListener { void invoke(SlateWindow window); }
+    public interface CloseListener { void invoke(WindowCloseEvent event); }
 
     @FunctionalInterface
     public interface FocusListener { void invoke(SlateWindow window, boolean focused); }

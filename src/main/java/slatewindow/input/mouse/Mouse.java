@@ -1,8 +1,8 @@
 package slatewindow.input.mouse;
 
 import org.lwjgl.glfw.GLFW;
-import slatewindow.SlateWindow;
-import slatewindow.input.InputDevice;
+import slatewindow.window.SlateWindow;
+import slatewindow.input.SlateInputDevice;
 import slatewindow.input.keyboard.KeyMod;
 
 import java.util.EnumMap;
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 // Class to manage mouse input, tracking button states and cursor position
-public class Mouse extends InputDevice {
+public class Mouse extends SlateInputDevice {
     private final Map<MouseButton, MouseButtonState> buttonStates = new EnumMap<>(MouseButton.class);
     private final Set<KeyMod> activeMods = EnumSet.noneOf(KeyMod.class);
 

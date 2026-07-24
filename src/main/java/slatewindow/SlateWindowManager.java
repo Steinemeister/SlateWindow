@@ -3,14 +3,17 @@ package slatewindow;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
-import slatewindow.listener.*;
 
-import slatewindow.listener.Listeners.*;
+import slatewindow.input.SlateInputDevice;
+import slatewindow.window.SlateWindow;
+import slatewindow.window.SlateWindowBuilder;
+import slatewindow.window.SlateWindowFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 /**
  * Manager that holds windows and global peripheral listeners.
@@ -18,6 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SlateWindowManager {
     private final List<SlateWindow> windows = new CopyOnWriteArrayList<>();
     private final AtomicBoolean initialized = new AtomicBoolean(false);
+
+    private List<Supplier<? extends SlateInputDevice>> inputDeviceSuppliers = new ArrayList<>();
 
 
     public void init() {
@@ -55,6 +60,10 @@ public class SlateWindowManager {
 
     public void registerWindow(SlateWindow window) {
         windows.add(window);
+    }
+
+    public void addInputDevice(Supplier<? extends SlateInputDevice> deviceSupplier) {
+        inputDeviceSuppliers.add(deviceSupplier);
     }
 
     public void update() {

@@ -2,13 +2,10 @@ package slatewindow.example;
 
 import org.lwjgl.glfw.GLFW;
 import slatewindow.SlateMonitorInfo;
-import slatewindow.SlateWindow;
+import slatewindow.window.SlateWindow;
 import slatewindow.SlateWindowManager;
 import slatewindow.input.keyboard.Key;
-import slatewindow.input.keyboard.KeyState;
 import slatewindow.input.mouse.CursorMode;
-import slatewindow.input.mouse.MouseButton;
-import slatewindow.input.mouse.MouseButtonState;
 
 import java.util.List;
 
@@ -30,10 +27,10 @@ public class Demo {
         SlateWindow window = manager.builder()
                 .title("SlateWindow Demo")
                 .size(800, 600)
-                .onClose(w -> {
-                    System.out.println("Close requested for window: " + w.getTitle());
+                .onClose(event -> {
+                    System.out.println("Close requested for window: " + event.getWindow().getTitle());
                     // Close explicitly to allow manager to clean up
-                    w.close();
+                    event.getWindow().close();
                 })
                 .onResize((win, width, height) -> System.out.println("Resized: " + width + "x" + height))
                 .onFocus((win, focused) -> System.out.println("Focus changed: " + focused))
@@ -42,9 +39,9 @@ public class Demo {
         SlateWindow window2 = manager.builder()
                 .title("Second Window")
                 .size(400, 300)
-                .onClose(w -> {
-                    System.out.println("Close requested for second window: " + w.getTitle());
-                    w.close();
+                .onClose(event -> {
+                    System.out.println("Close requested for second window: " + event.getWindow().getTitle());
+                    event.getWindow().close();
                 })
                 .build();
 

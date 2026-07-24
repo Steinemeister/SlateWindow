@@ -1,7 +1,7 @@
 package slatewindow.input.keyboard;
 
-import slatewindow.SlateWindow;
-import slatewindow.input.InputDevice;
+import slatewindow.window.SlateWindow;
+import slatewindow.input.SlateInputDevice;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -11,7 +11,7 @@ import java.util.Set;
 import static org.lwjgl.glfw.GLFW.*;
 
 // Class to manage keyboard input, tracking key states and active modifiers
-public class Keyboard extends InputDevice {
+public class Keyboard extends SlateInputDevice {
     // Map to hold the state of each key
     private final Map<Key, KeyState> keyStates = new EnumMap<>(Key.class);
 
