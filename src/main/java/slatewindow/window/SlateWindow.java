@@ -3,6 +3,8 @@ package slatewindow.window;
 import org.lwjgl.glfw.*;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
+import slatewindow.input.SlateInputDevice;
+import slatewindow.input.SlateInputDevices;
 import slatewindow.input.keyboard.Keyboard;
 
 import slatewindow.input.mouse.Mouse;
@@ -10,10 +12,14 @@ import slatewindow.listener.Listeners.*;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 // Represents a GLFW window with event handling and listener support
 public class SlateWindow {
@@ -36,8 +42,8 @@ public class SlateWindow {
     private final List<CloseListener> closeListeners = new CopyOnWriteArrayList<>();
     private final List<FocusListener> focusListeners = new CopyOnWriteArrayList<>();
 
-    private final Keyboard keyboard;
-    private final Mouse mouse;
+    private Keyboard keyboard;
+    private Mouse mouse;
 
     private final AtomicInteger closeAttempts = new AtomicInteger(0);
     private static final int MAX_CLOSE_ATTEMPTS = 3;
@@ -48,8 +54,6 @@ public class SlateWindow {
         this.width = width;
         this.height = height;
 
-        this.keyboard = new Keyboard(this);
-        this.mouse = new Mouse(this);
         this.focused = new AtomicBoolean(GLFW.glfwGetWindowAttrib(handle, GLFW.GLFW_FOCUSED) == GLFW.GLFW_TRUE);
 
         registerCallbacks();
@@ -89,8 +93,13 @@ public class SlateWindow {
     }
 
     public void update() {
-        keyboard.update();
-        mouse.update();
+        if (keyboard != null) keyboard.update();
+        if (mouse != null) mouse.update();
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+        GLFW.glfwSetWindowTitle(handle, title);
     }
 
     public void setIcon(String iconPath) {
@@ -130,6 +139,14 @@ public class SlateWindow {
     public void addResizeListener(ResizeListener l) { resizeListeners.add(l); }
     public void addCloseListener(CloseListener l) { closeListeners.add(l); }
     public void addFocusListener(FocusListener l) { focusListeners.add(l); }
+
+    public void activateInputDevice(SlateInputDevices deviceType) {
+        switch (deviceType) {
+            case KEYBOARD -> this.keyboard = deviceType.create(this);
+            case MOUSE -> this.mouse = deviceType.create(this);
+            default -> throw new IllegalArgumentException("Unknown device type: " + deviceType);
+        }
+    }
 
     /** Close and destroy the GLFW window exactly once. */
     public void close() {
@@ -184,7 +201,6 @@ public class SlateWindow {
         }
 
         if (event.isCancelled()) {
-            System.err.println("Window close request was cancelled by a listener.");
             closeAttempts.set(0); // Reset attempts if cancelled
             return;
         }

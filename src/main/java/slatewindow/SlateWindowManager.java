@@ -22,9 +22,6 @@ public class SlateWindowManager {
     private final List<SlateWindow> windows = new CopyOnWriteArrayList<>();
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    private List<Supplier<? extends SlateInputDevice>> inputDeviceSuppliers = new ArrayList<>();
-
-
     public void init() {
         if (initialized.compareAndSet(false, true)) {
             if (!GLFW.glfwInit()) throw new IllegalStateException("Unable to initialize GLFW");
@@ -62,10 +59,6 @@ public class SlateWindowManager {
         windows.add(window);
     }
 
-    public void addInputDevice(Supplier<? extends SlateInputDevice> deviceSupplier) {
-        inputDeviceSuppliers.add(deviceSupplier);
-    }
-
     public void update() {
         windows.removeIf(SlateWindow::isClosed);
         for (SlateWindow window : windows) {
@@ -77,7 +70,10 @@ public class SlateWindowManager {
 
     public void terminate() {
         for (SlateWindow w : windows) {
-            if (!w.isClosed()) w.close();
+            if (!w.isClosed()) {
+                System.err.println("Warning: Window " + w.getTitle() + " was not closed before manager termination. Closing now.");
+                w.close();
+            }
         }
         windows.clear();
         if (initialized.get()) GLFW.glfwTerminate();

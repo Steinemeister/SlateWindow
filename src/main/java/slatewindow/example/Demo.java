@@ -2,6 +2,7 @@ package slatewindow.example;
 
 import org.lwjgl.glfw.GLFW;
 import slatewindow.SlateMonitorInfo;
+import slatewindow.input.SlateInputDevices;
 import slatewindow.window.SlateWindow;
 import slatewindow.SlateWindowManager;
 import slatewindow.input.keyboard.Key;
@@ -30,7 +31,7 @@ public class Demo {
                 .onClose(event -> {
                     System.out.println("Close requested for window: " + event.getWindow().getTitle());
                     // Close explicitly to allow manager to clean up
-                    event.getWindow().close();
+                    event.cancel();
                 })
                 .onResize((win, width, height) -> System.out.println("Resized: " + width + "x" + height))
                 .onFocus((win, focused) -> System.out.println("Focus changed: " + focused))
@@ -47,7 +48,7 @@ public class Demo {
 
         // Position window roughly centered on primary monitor
         if (!monitors.isEmpty()) {
-            SlateMonitorInfo primary = monitors.get(0);
+            SlateMonitorInfo primary = monitors.getFirst();
             int x = Math.max(0, (primary.getWidth() - window.getWidth()) / 2);
             int y = Math.max(0, (primary.getHeight() - window.getHeight()) / 2);
             window.setPosition(x, y);
@@ -61,6 +62,9 @@ public class Demo {
         // Make visible and enable a stored vsync flag
         window.setVisible(true);
         window.setVSync(1);
+
+        window.activateInputDevice(SlateInputDevices.KEYBOARD);
+        window.activateInputDevice(SlateInputDevices.MOUSE);
 
         // Set cursor mode to disabled (hidden)
         window.getMouse().setCursorMode(CursorMode.HIDDEN);
@@ -85,21 +89,23 @@ public class Demo {
                 lastTime = now;
             }
 
-            // Update title with FPS once per second using GLFW directly
+            // Update FPS in window title every second
             long tms = System.currentTimeMillis();
             if (tms - lastFpsUpdate >= 1000) {
                 int fps = frames;
                 frames = 0;
                 lastFpsUpdate = tms;
                 String newTitle = String.format("SlateWindow Demo - %d FPS - %dx%d", fps, window.getWidth(), window.getHeight());
-                GLFW.glfwSetWindowTitle(window.getHandle(), newTitle);
+                window.setTitle(newTitle);
             }
 
             if (window.getKeyboard().isKeyDown(Key.ESCAPE)) {
                 System.out.println("Escape pressed, requesting window close.");
-                window.requestClose();
+                window.close();  // force close the window
             }
         }
+
+        window2.requestClose();
 
         manager.terminate();
         System.out.println("Terminated.");
